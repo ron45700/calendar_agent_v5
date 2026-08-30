@@ -4,7 +4,7 @@ from datetime import datetime , timedelta
 
 
 @dataclass
-class ParseResult():
+class ParseResult:
     success : bool
     event: "Event | None" = None
     error_message: str | None = None
