@@ -1,22 +1,15 @@
-from src.interpretation.parser import parse 
+from src.interpretation.parser import create_eventResult 
 from src.config import settings
 
 def run():
-    while True:
-        name = input("what is your full name? : ").strip()
-        if name == "quit":
-            break
-        elif name== "":
-            continue
-        print(parse(name))
-        time = input("write how long or default : ").strip()
-        if time == "default":
-            print(f"default time= {settings.DEFAULT_DURATION_MINUTES}")
-        elif time.isdigit(): 
-            print(time)
-        else:
-            print("its not a number!")
-
+   
+     title = "Gym time"
+     first_date = "30/08/2026 15:00"
+     second_date = "31/08/2025"
+     print(create_eventResult(title, first_date))
+     print()
+     print(create_eventResult(title, second_date))
+    
 
 if __name__ == "__main__":
     run()

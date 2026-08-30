@@ -1,48 +1,45 @@
+from dataclasses import dataclass
+from src.models.event import Event
+from datetime import datetime , timedelta
 
-def convert_str_to_list(sentence:str) -> list:
-    words_list = sentence.split()
-    return words_list
 
-def convert_list_to_dict(somelist:list) -> dict:
-    d= {}
-    for index , word in enumerate(somelist):
-        d[word.lower()] = index
-    return d
+@dataclass
+class ParseResult():
+    success : bool
+    event: "Event | None" = None
+    error_message: str | None = None
 
-def check_set_in_string (key_list:set , somelist:list) -> dict:
-    d = {}
-    for k in key_list :
-            if k in somelist: 
-              d[k] = True
-            else:
-              d[k] = False
-    return d
+ 
 
-def convert_list_to_set(somelist:list) -> set:
-    s = {word for word in somelist}
-    return s
+def str_to_datetime(date:str )-> datetime:
+        return datetime.strptime(date, "%d/%m/%Y %H:%M")
+       
+
+def create_eventResult(title:str , date:str) ->ParseResult:
+    try:
+        parse_start_date = str_to_datetime(date)
+        gap= timedelta(minutes=60)
+        parse_end_date = parse_start_date+gap
+        new_event = Event(title , parse_start_date, parse_end_date , gap)
+        return ParseResult(success=True ,event=new_event)
+
+    except ValueError as e:
+           return ParseResult(success=False , event=None ,error_message=f"first convertation str to datetime failed: {e}")
+   
 
 
 
 def main() -> None:
 
-    sentence = "Hello my name is ron "
-    key_set = {"with" , "at" , "tomorrow" , "name"}
+    title = "Gym time"
+    first_date = "30/08/2026 15:00"
+    second_date = "31/08/2025"
 
+    print(create_eventResult(title, first_date))
+    print()
+    print(create_eventResult(title, second_date))
 
-    sent_list = convert_str_to_list(sentence)
-    print(f"the list is: {sent_list}")
-
-    sent_dict = convert_list_to_dict(sent_list)
-    print(f"the dict is: {sent_dict}")
-
-    checker = check_set_in_string(key_set , sent_list)
-    print(checker)
-
-    check_set = convert_list_to_set(sent_list)
-    print(f"the set is: {check_set}")
-
-
+   
 if __name__ == "__main__" :  
     main()  
 

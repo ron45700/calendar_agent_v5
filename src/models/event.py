@@ -1,19 +1,15 @@
 from dataclasses import dataclass
 from typing import Optional
+from datetime import datetime , timedelta
 
 @dataclass
 class Event :
     title: str
-    start_time: str
-    duration_in_min: int
+    start_date: datetime
+    end_date: datetime
+    duration : timedelta
     location: Optional[str] = None
 
-
-    def print_event(self) -> None:
-        print(self)
-
-    def check_equals(self , second:"Event" ) -> None:
-        print(self == second)
           
 
 
