@@ -1,15 +1,16 @@
-from src.interpretation.parser import create_eventResult
+from datetime import datetime, timedelta
+
+from src.config.settings import DEFAULT_DURATION_MINUTES, TIMEZONE
+from src.models.event import Event
 
 
-def run():
+def main()->None:
 
-    title = "Gym time"
-    first_date = "30/08/2026 15:00"
-    second_date = "31/08/2025"
-    print(create_eventResult(title, first_date))
-    print()
-    print(create_eventResult(title, second_date))
+    start_date = datetime(2026 , 6 , 9, 12 , tzinfo=TIMEZONE)
+    duration = timedelta(minutes=DEFAULT_DURATION_MINUTES)
+    end_date = start_date + duration
+    print(Event(summary="test" , start=start_date , end=end_date))
 
+if __name__ == "__main__" :
+    main()
 
-if __name__ == "__main__":
-    run()
