@@ -1,8 +1,10 @@
-
-
-def send_fake_msg(prompt:str) -> dict:
-     return {
-        "choices": [
-            {"message": {"content": "Gym time, 30/08/2026 15:00-16:00"}}
-        ]
-    }
+def send_fake_msg(prompt: str, schema: dict) -> str:
+    return (
+        ""
+        '{"status":"ok","clarification_question":null,'
+        '"event":{'
+        '"summary":"gym time",'
+        '"location":null,'
+        '"start":{"dateTime":"2026-06-09T12:00:00+03:00","timeZone":"Asia/Jerusalem"},'
+        '"end":{"dateTime":"2026-06-09T13:30:00+03:00","timeZone":"Asia/Jerusalem"}}}'
+    )

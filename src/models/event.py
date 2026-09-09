@@ -8,10 +8,3 @@ class Event:
     start: datetime
     end: datetime
     location: str | None = None
-
-
-
-
-
-
-
