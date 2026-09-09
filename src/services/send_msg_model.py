@@ -1,6 +1,7 @@
 from collections.abc import Callable
 
-Model = Callable[[str],dict]
+Model = Callable[[str, dict], str]
 
-def send_message(model: Model , prompt: str ) -> dict:
-    return model(prompt)
+
+def send_message(model: Model, prompt: str, schema: dict) -> str:
+    return model(prompt, schema)
