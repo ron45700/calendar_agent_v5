@@ -4,6 +4,7 @@ from zoneinfo import ZoneInfo
 
 from src.interpretation.prompts.create_event_prompt import EVENT_INSTRUCTIONS
 from src.models.event import Event
+from src.models.parse_result import ParseResult
 from src.models.status import Status
 
 
@@ -22,7 +23,12 @@ def build_event_prompt(
             "schema": {
                 "type": "object",
                 "properties": {
-                    "status": {"type": "string", "enum": [s.value for s in Status]},
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            s.value for s in Status if s.value != Status.FAILED.value
+                        ],
+                    },
                     "clarification_question": {"type": ["string", "null"]},
                     "event": {
                         "anyOf": [
@@ -65,15 +71,50 @@ def build_event_prompt(
     return prompt_text, event_response_schema
 
 
-def response_to_event(response: str) -> Event | str:
+def response_to_parseresult(response: str) -> ParseResult:
     content = json.loads(response)
-    if Status(content.get("status")) == Status.OK:
-        event_fields = content["event"]
-        return Event(
-            summary=event_fields["summary"],
-            start=datetime.fromisoformat(event_fields["start"]["dateTime"]),
-            end=datetime.fromisoformat(event_fields["end"]["dateTime"]),
-            location=event_fields["location"],
+    stat = content.get("status")
+    try:
+        stat_obj = Status(stat)
+        if stat_obj == Status.OK:
+            event_fields = content["event"]
+            try:
+                start_date = datetime.fromisoformat(event_fields["start"]["dateTime"])
+                end_date = datetime.fromisoformat(event_fields["end"]["dateTime"])
+                if start_date < end_date:
+                    new_event = Event(
+                        summary=event_fields["summary"],
+                        start=start_date,
+                        end=end_date,
+                        location=event_fields["location"],
+                    )
+                    # status OK , event filled
+                    return ParseResult(status=stat, event=new_event)
+                else:
+                    # status OK turn to FAILED , dates range are mismatch
+                    return ParseResult(
+                        status=Status.FAILED,
+                        exception=f"mismatch dates range (end date comes before start date). start_date:{start_date} , end_date:{end_date}",
+                    )
+            except ValueError as e:
+                # status OK turns to FAILED , exception at creating datetime object
+                return ParseResult(
+                    status=Status.FAILED,
+                    exception=f"one of the dates is missing or not in the correct format. start date:{event_fields["start"]["dateTime"]} , end date{event_fields["end"]["dateTime"]} || Formal error:{e}",
+                )
+
+        elif stat_obj == Status.NEED_CLARIFICATION:
+            clarification = content["clarification_question"]
+            # status NEED_CLARIFICATION , calrification filled
+            return ParseResult(status=stat, need_clarification=clarification)
+        else:
+            return ParseResult(
+                status=Status.FAILED,
+                exception=f"status value isnt from Status class options: {stat}",
+            )
+    except ValueError as e:
+        # status value isnt in Status enum options
+        return ParseResult(
+            status=Status.FAILED,
+            exception=f"status value isnt from Status class options: {e}",
         )
-    else:
-        return content["clarification_question"]
