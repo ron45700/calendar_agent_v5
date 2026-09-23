@@ -1,0 +1,36 @@
+[
+    {
+        "test_type":"chain",
+        "name": "need clarification",
+        "raw_text":"תיצור לי אימון בחדר כושר למחר" ,
+        "now":"2026-09-24T10:00:00+03:00",
+        "expected_status":"need_clarification"
+    },
+    {
+    "test_type": "chain",
+    "name": "create event",
+    "raw_text": "תרשום לי אימון בחדר כושר למחר לשעה 14:00 ועד 15:30",
+    "now": "2026-09-24T10:00:00+03:00",
+    "expected_status": "ok",
+    "expected_event": {
+        "summary": "gym time",
+        "location": null,
+        "start": "2026-09-25T14:00:00+03:00",
+        "end": "2026-09-25T15:30:00+03:00" }
+    },
+    {
+    "test_type": "parser",
+    "name": "failed",
+    "fake_response": {
+        "status": "ok",
+        "clarification_question": null,
+        "event": {
+            "summary": "gym time",
+            "location": null,
+            "start": {"dateTime": "2026-09-25T15:30:00+03:00", "timeZone": "Asia/Jerusalem"},
+            "end": {"dateTime": "2026-09-25T14:00:00+03:00", "timeZone": "Asia/Jerusalem"}
+        }
+    },
+    "expected_status": "failed"
+    }
+]
