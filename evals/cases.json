@@ -20,7 +20,7 @@
     },
     {
     "test_type": "parser",
-    "name": "failed",
+    "name": "failed as a result of start date set to after end date",
     "fake_response": {
         "status": "ok",
         "clarification_question": null,
@@ -31,6 +31,7 @@
             "end": {"dateTime": "2026-09-25T14:00:00+03:00", "timeZone": "Asia/Jerusalem"}
         }
     },
-    "expected_status": "failed"
+    "expected_status": "failed",
+    "reason": "mismatch dates range"
     }
 ]
